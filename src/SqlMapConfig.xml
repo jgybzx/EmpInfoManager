@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <!--xml的标签 是有顺序的-->
+    <!--引入properties的文件 就可以使用properties的内容, 好处: 修改的时候 不需要查看xml
+      url : 绝对的物理位置 e:/db.properties
+      resource: 相对位置
+      <properties resource="jdbc.properties" url="绝对的物理位置"/>
+    -->
+    <properties resource="jdbc.properties"/>
+    <!--<settings>
+        <setting name="lazyLoadingEnabled" value="true"/>
+    </settings>-->
+    <!--别名的配置-->
+    <typeAliases>
+        <!-- type="com.itheima.domain.User"  类型  alias="user" 别名 -->
+        <!--<typeAlias type="com.itheima.domain.User" alias="user"></typeAlias>-->
+        <!--在此包下的所有的类都使用别名 : 使用的别名 默认就是类名 且不区分大小写, 建议写小写-->
+        <package name="com.jgybzx.domain"/>
+
+    </typeAliases>
+    <!--   environments 环境  可以配置多个环境，默认 -->
+    <environments default="development">
+        <environment id="development"> <!--环境id-->
+            <transactionManager type="JDBC"/><!--事务管理器 帮助我们管理事务，使用JDBC-->
+            <!-- 连接池：数据源dataSource所有连接池都必须实现这个接口-->
+            <dataSource type="POOLED">
+                <!-- -->
+                <property name="driver" value="${jdbc.driver}"/>
+                <property name="url" value="${jdbc.url}"/>
+                <property name="username" value="${jdbc.username}"/>
+                <property name="password" value="${jdbc.password}"/>
+            </dataSource>
+        </environment>
+    </environments>
+    <!--    映射文件的指定-->
+    <mappers>
+
+        <!--
+          第三种方式: 直接配置到接口层下即可 包下即可
+          要求xml的文件名称 必须和接口的名称一模一样 且位置一模一样
+          在此包下的所有接口都会被加载 且会自动匹配同名的xml文件
+        -->
+        <package name="com.jgybzx.dao"/>
+        <!--        <package name="com.jgybzx.dao"/>-->
+
+    </mappers>
+</configuration>
