@@ -46,4 +46,24 @@ public class EmpService {
         empDao.delete(id);
         MyBatisUtils.close(sqlSession);
     }
+
+    public List<Emp> selectPage(int pageNumber, int pageSize) {
+        List<Emp> empList = null;
+        SqlSession sqlSession = MyBatisUtils.openSession();
+        EmpDao empDao = sqlSession.getMapper(EmpDao.class);
+
+        int pageIndex = (pageNumber-1)*pageSize;
+        empList = empDao.selectPage(pageIndex,pageSize);
+        MyBatisUtils.close(sqlSession);
+        return empList;
+
+    }
+
+    public void insert(Emp emp) {
+        SqlSession sqlSession = MyBatisUtils.openSession();
+        EmpDao empDao = sqlSession.getMapper(EmpDao.class);
+
+        empDao.insert(emp);
+        MyBatisUtils.close(sqlSession);
+    }
 }

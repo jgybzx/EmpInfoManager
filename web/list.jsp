@@ -59,7 +59,7 @@
                     <td><a class="btn btn-default btn-sm"
                            href="${pageContext.request.contextPath}/EmpServlet?action=edit&id=${emp.id}">修改</a>&nbsp;
                         <a class="btn btn-default btn-sm"
-                            onclick="deleteEmp(${emp.id})">删除</a></td>
+                           onclick="deleteEmp(${emp.id})">删除</a></td>
                 </tr>
             </c:forEach>
         </c:if>
@@ -74,11 +74,11 @@
             //在删除之前进行提示，判断是否真 的要删除
             function deleteEmp(empid) {
                 var flag = confirm("是否删除");//点了是就返回 true
-                if(flag){
+                if (flag) {
                     //如果点了是，才继续跳转
                     //如果直接写 href标签，发现因为之前阻止了javascript:void(0)，运行不了，所以可以直接修改浏览器的地址
                     //如果直接修改浏览器的地址，则我们需要当前 用户id，所以可以当作参数传递进来
-                    location.href="${pageContext.request.contextPath}/EmpServlet?action=delete&id="+empid
+                    location.href = "${pageContext.request.contextPath}/EmpServlet?action=delete&id=" + empid
                 }
             }
         </script>
@@ -86,6 +86,47 @@
             <td colspan="9" align="center">
                 <a class="btn btn-primary" href="add.jsp">添加员工</a>
                 <input class="btn btn-primary" type="button" value="删除选中">
+            </td>
+        </tr>
+        <tr>
+            <td colspan="9" align="center">
+                <nav>
+                    <ul class="pagination">
+                        <li >
+                            <a href="#">
+                                <span>首页</span>
+                            </a>
+                        </li>
+                        <%-- 上一页 class="disabled"--%>
+                        <li >
+                            <a href="#">
+                                <span>&laquo;上一页</span>
+                            </a>
+                        </li>
+
+                        <%-- 页码显示区 --%>
+                        <li class="active"><a href="#">1</a></li>
+                        <li><a href="#">2</a></li>
+                        <li><a href="#">3</a></li>
+                        <li><a href="#">4</a></li>
+
+                        <%-- 下一页 --%>
+                        <li>
+                            <a href="#">
+                                <span>下一页&raquo;</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#">
+                                <span>尾页</span>
+                            </a>
+                        </li>
+                        <span style="font-size:25px;margin-left:5px">
+		总16条记录，共4页
+	</span>
+                    </ul>
+
+                </nav>
             </td>
         </tr>
     </table>

@@ -1,9 +1,7 @@
 package com.jgybzx.dao;
 
 import com.jgybzx.domain.Emp;
-import org.apache.ibatis.annotations.Delete;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
@@ -25,4 +23,10 @@ public interface EmpDao {
 
     @Delete("delete from emp where id = #{id}")
     public void delete(String id);
+
+    @Select("select * from emp limit #{pageIndex},#{pageSize}")
+    List<Emp> selectPage(@Param("pageIndex") int pageIndex, @Param("pageSize") int pageSize);
+
+    @Insert("insert into emp values(#{id},#{ename},#{sex},#{joindate},#{salary},#{address}) ")
+    void insert(Emp emp);
 }
