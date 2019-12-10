@@ -24,6 +24,14 @@ public class TestDemo {
         for (Emp emp : emps) {
             System.out.println(emp);
         }
-
     }
+    //测试 Math的向上向下取整
+    @Test
+    public void math(){
+        double a = 13.0;
+        int b = 5;
+        double i = a / b;
+        System.out.println(Math.ceil(i));
+    }
+
 }

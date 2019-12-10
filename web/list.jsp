@@ -44,8 +44,8 @@
             <th>地址</th>
             <th>操作</th>
         </tr>
-        <c:if test="${ not empty empList}">
-            <c:forEach var="emp" items="${empList}">
+        <c:if test="${ not empty pageBeans.empList}">
+            <c:forEach var="emp" items="${pageBeans.empList}">
                 <tr>
                     <td>
                         <input type="checkbox" name="ids">
@@ -93,36 +93,38 @@
                 <nav>
                     <ul class="pagination">
                         <li >
-                            <a href="#">
+                            <a href="${pageContext.request.contextPath}/EmpServlet?action=findAll&pageNumber=1" >
                                 <span>首页</span>
                             </a>
                         </li>
                         <%-- 上一页 class="disabled"--%>
-                        <li >
-                            <a href="#">
+<%--                        上一页，那就是当前页减一，刚好pagebean里边有个 pagenumber--%>
+                        <li  class="${pageBeans.pagNumber==1?'hidden':''}">
+                            <a href="${pageContext.request.contextPath}/EmpServlet?action=findAll&pageNumber=${pageBeans.pagNumber-1}">
+
                                 <span>&laquo;上一页</span>
                             </a>
                         </li>
 
-                        <%-- 页码显示区 --%>
-                        <li class="active"><a href="#">1</a></li>
-                        <li><a href="#">2</a></li>
-                        <li><a href="#">3</a></li>
-                        <li><a href="#">4</a></li>
+                        <%-- 页码显示区 开始循环，开始：1，结束：页码  class="active" 是否激活  判断当前页面是第几个，就激活第几个--%>
+                        <c:forEach begin="1" end="${pageBeans.totalPage}" step="1" varStatus="index">
+                            <li class="${pageBeans.pagNumber==index.count?'active':''}"><a
+                                    href="${pageContext.request.contextPath}/EmpServlet?action=findAll&pageNumber=${index.count}">${index.count}</a></li>
+                        </c:forEach>
 
                         <%-- 下一页 --%>
-                        <li>
-                            <a href="#">
+                        <li class="${pageBeans.pagNumber==pageBeans.totalPage?'hidden':''}">
+                            <a href="${pageContext.request.contextPath}/EmpServlet?action=findAll&pageNumber=${pageBeans.pagNumber+1}">
                                 <span>下一页&raquo;</span>
                             </a>
                         </li>
                         <li>
-                            <a href="#">
+                            <a href="${pageContext.request.contextPath}/EmpServlet?action=findAll&pageNumber=${pageBeans.totalPage}" >
                                 <span>尾页</span>
                             </a>
                         </li>
                         <span style="font-size:25px;margin-left:5px">
-		总16条记录，共4页
+		总${pageBeans.totalCount}条记录，共${pageBeans.totalPage}页
 	</span>
                     </ul>
 

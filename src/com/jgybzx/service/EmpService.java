@@ -2,6 +2,7 @@ package com.jgybzx.service;
 
 import com.jgybzx.dao.EmpDao;
 import com.jgybzx.domain.Emp;
+import com.jgybzx.domain.PageBean;
 import com.jgybzx.utils.MyBatisUtils;
 import org.apache.ibatis.session.SqlSession;
 
@@ -27,7 +28,7 @@ public class EmpService {
         Emp emp = new Emp();
         SqlSession sqlSession = MyBatisUtils.openSession();
         EmpDao empDao = sqlSession.getMapper(EmpDao.class);
-        emp  = empDao.fingById(id);
+        emp = empDao.fingById(id);
         MyBatisUtils.close(sqlSession);
         return emp;
     }
@@ -47,16 +48,51 @@ public class EmpService {
         MyBatisUtils.close(sqlSession);
     }
 
+    //简单分页查询
     public List<Emp> selectPage(int pageNumber, int pageSize) {
         List<Emp> empList = null;
         SqlSession sqlSession = MyBatisUtils.openSession();
         EmpDao empDao = sqlSession.getMapper(EmpDao.class);
-
-        int pageIndex = (pageNumber-1)*pageSize;
-        empList = empDao.selectPage(pageIndex,pageSize);
+        //从前端传递的页码，需要计算处理 一下
+        int pageIndex = (pageNumber - 1) * pageSize;
+        empList = empDao.selectPage(pageIndex, pageSize);
         MyBatisUtils.close(sqlSession);
         return empList;
+    }
 
+    /**
+     * @param pageNumber
+     * @param pageSize
+     * @return
+     */
+    //复杂分页查询
+    public PageBean<Emp> selectPageBean(int pageNumber, int pageSize) {
+        System.out.printf("selectPageBean");
+        System.out.println(pageNumber);
+        System.out.println(pageSize);
+        SqlSession sqlSession = MyBatisUtils.openSession();
+        EmpDao empDao = sqlSession.getMapper(EmpDao.class);
+        PageBean<Emp> pageBean = new PageBean<>();//创建对象
+
+        //从前端传递的页码，需要计算处理 一下
+        int pageIndex = (pageNumber - 1) * pageSize;
+
+        List<Emp> empList = empDao.selectPage(pageIndex, pageSize);
+        System.out.println(empList);
+        int  totalCount = empDao.findCount();//从dao取到条数
+        System.out.println("totalCount = " + totalCount);
+        int totalPage = (totalCount%pageSize) == 0 ? (totalCount/pageSize):(totalCount/pageSize)+1;
+        System.out.println("totalPage = " + totalPage);
+        //赋值对象
+        pageBean.setEmpList(empList);//分页 的数据
+        pageBean.setTotalCount(totalCount);//总记录数，从dao拿到
+        pageBean.setTotalPage(totalPage);//总页数
+        pageBean.setPageSize(pageSize);//每页几行  从页面拿到，参数传递
+        pageBean.setPagNumber(pageNumber);//第几页 从页面拿到，参数传递
+
+        MyBatisUtils.close(sqlSession);
+        System.out.println("pageBean = " + pageBean);
+        return pageBean;//返回对象
     }
 
     public void insert(Emp emp) {

@@ -1,6 +1,7 @@
 package com.jgybzx.web.servlet;
 
 import com.jgybzx.domain.Emp;
+import com.jgybzx.domain.PageBean;
 import com.jgybzx.service.EmpService;
 import org.apache.commons.beanutils.BeanUtils;
 
@@ -36,9 +37,9 @@ public class EmpServlet extends HttpServlet {
         //action="findAll"  action = "edit" action="update" action="save" action = delete
         String action = request.getParameter("action");
         if ("findAll".equals(action)) {//查询全部
-            this.findAll(request,response);
-            //this.findAllPage(request, response);//分页查询
-
+//            this.findAll(request,response);
+//            this.findAllPage(request, response);//分页查询
+            this.findAllPageBean(request,response);//复杂分页查询
         } else if ("edit".equals(action)) {//修改之前需要查询
             this.edit(request, response);
         } else if ("update".equals(action)) {//修改
@@ -58,7 +59,7 @@ public class EmpServlet extends HttpServlet {
             BeanUtils.populate(emp,parameterMap);
             empService.insert(emp);
             ///数据添加，重定向到查询页面，不要忘记 传递action参数
-            response.sendRedirect(request.getContextPath() + "/EmpServlet?action=findAll");
+            response.sendRedirect(request.getContextPath() + "/EmpServlet?action=findAll&pageNumber=1");
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         } catch (InvocationTargetException e) {
@@ -108,6 +109,33 @@ public class EmpServlet extends HttpServlet {
         request.getRequestDispatcher("list.jsp").forward(request, response);
     }
 
+    public void findAllPageBean(HttpServletRequest request, HttpServletResponse response) throws ServletException,
+            IOException {
+        // 复杂分页查询
+        //获取数据
+        String pageNumberStr = request.getParameter("pageNumber");//（暂时在请求中手动写）
+        System.out.println(pageNumberStr);
+        String pageSizeStr = request.getParameter("pageSize");//（暂时写死）
+        int pageSize = 5;
+        //页码,这个 由于get提交，这个地方的页码可以人为修改，
+        // 从而就会造成类型转换异常，所以需要来个异常处理
+        int pageNumber = 1;//先定义一个1，如果转换异常，那么
+        try {//如果类型转换异常，那么pageNumber还是1
+            pageNumber = Integer.parseInt(pageNumberStr);
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
+
+        //处理请求数据，每次不在是全部查询，而是分页查询
+        EmpService empService = new EmpService();
+        //将获取到的pageBean返回，里边已经包含了很多数据
+        PageBean<Emp> pageBeans=empService.selectPageBean(pageNumber,pageSize);
+        System.out.println(pageBeans);
+        request.setAttribute("pageBeans", pageBeans);
+
+        //请求转发到
+        request.getRequestDispatcher("list.jsp").forward(request, response);
+    }
     public void edit(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         //修改之前，根据id，查询出一条数据,所以需要前台页面传递一个id
         String id = request.getParameter("id");
@@ -130,8 +158,8 @@ public class EmpServlet extends HttpServlet {
             //封装成对象之后，调用service 然后调用dao进行数据存储
             EmpService empService = new EmpService();
             empService.update(emp);
-            //数据存完之后，重定向到查询页面，不要忘记 传递action参数
-            response.sendRedirect(request.getContextPath() + "/EmpServlet?action=findAll");
+            //数据存完之后，重定向到查询页面，不要忘记 传递action参数，以及pageNumber
+            response.sendRedirect(request.getContextPath() + "/EmpServlet?action=findAll&pageNumber=1");
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         } catch (InvocationTargetException e) {
@@ -146,6 +174,6 @@ public class EmpServlet extends HttpServlet {
         empService.delete(id);
 
         //数据删完，重定向到查询页面，不要忘记 传递action参数
-        response.sendRedirect(request.getContextPath() + "/EmpServlet?action=findAll");
+        response.sendRedirect(request.getContextPath() + "/EmpServlet?action=findAll&pageNumber=1");
     }
 }

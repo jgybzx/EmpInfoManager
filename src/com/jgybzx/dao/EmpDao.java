@@ -29,4 +29,6 @@ public interface EmpDao {
 
     @Insert("insert into emp values(#{id},#{ename},#{sex},#{joindate},#{salary},#{address}) ")
     void insert(Emp emp);
+    @Select("select count(*) from  emp")
+    int findCount();
 }
