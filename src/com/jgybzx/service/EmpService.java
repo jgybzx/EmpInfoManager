@@ -6,6 +6,8 @@ import com.jgybzx.domain.PageBean;
 import com.jgybzx.utils.MyBatisUtils;
 import org.apache.ibatis.session.SqlSession;
 
+import java.sql.Array;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -67,9 +69,8 @@ public class EmpService {
      */
     //复杂分页查询
     public PageBean<Emp> selectPageBean(int pageNumber, int pageSize) {
-        System.out.printf("selectPageBean");
-        System.out.println(pageNumber);
-        System.out.println(pageSize);
+//        System.out.println(pageNumber);
+//        System.out.println(pageSize);
         SqlSession sqlSession = MyBatisUtils.openSession();
         EmpDao empDao = sqlSession.getMapper(EmpDao.class);
         PageBean<Emp> pageBean = new PageBean<>();//创建对象
@@ -78,11 +79,11 @@ public class EmpService {
         int pageIndex = (pageNumber - 1) * pageSize;
 
         List<Emp> empList = empDao.selectPage(pageIndex, pageSize);
-        System.out.println(empList);
+//        System.out.println(empList);
         int  totalCount = empDao.findCount();//从dao取到条数
-        System.out.println("totalCount = " + totalCount);
+//        System.out.println("totalCount = " + totalCount);
         int totalPage = (totalCount%pageSize) == 0 ? (totalCount/pageSize):(totalCount/pageSize)+1;
-        System.out.println("totalPage = " + totalPage);
+//        System.out.println("totalPage = " + totalPage);
         //赋值对象
         pageBean.setEmpList(empList);//分页 的数据
         pageBean.setTotalCount(totalCount);//总记录数，从dao拿到
@@ -91,7 +92,7 @@ public class EmpService {
         pageBean.setPagNumber(pageNumber);//第几页 从页面拿到，参数传递
 
         MyBatisUtils.close(sqlSession);
-        System.out.println("pageBean = " + pageBean);
+//        System.out.println("pageBean = " + pageBean);
         return pageBean;//返回对象
     }
 
@@ -100,6 +101,17 @@ public class EmpService {
         EmpDao empDao = sqlSession.getMapper(EmpDao.class);
 
         empDao.insert(emp);
+        MyBatisUtils.close(sqlSession);
+    }
+
+    public void deleteMultiple(String[] ids) {
+        SqlSession sqlSession = MyBatisUtils.openSession();
+        EmpDao empDao = sqlSession.getMapper(EmpDao.class);
+        /*Integer[] intIds  = new Integer[ids.length];
+        for (int i = 0; i < ids.length; i++) {
+            intIds[i] = Integer.parseInt(ids[i]);
+        }*/
+        empDao.deleteMultiple(ids);
         MyBatisUtils.close(sqlSession);
     }
 }

@@ -31,4 +31,6 @@ public interface EmpDao {
     void insert(Emp emp);
     @Select("select count(*) from  emp")
     int findCount();
+
+    void deleteMultiple(String[] ids);
 }

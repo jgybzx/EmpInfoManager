@@ -26,6 +26,7 @@
     <form action="${pageContext.request.contextPath}/EmpServlet" method="post">
         <%--隐藏域--%>
         <input type="hidden" name="action" value="save">
+        <input type="hidden" name="pageNumber" value="4">
         <div class="form-group">
             <label for="ename">姓名：</label>
             <input type="text" class="form-control" id="ename" name="ename" placeholder="请输入姓名">
@@ -39,7 +40,7 @@
 
         <div class="form-group">
             <label for="joindate">入职日期：</label>
-            <input type="date" class="form-control" id="joindate" name="joindate" >
+            <input type="date" class="form-control" id="joindate" name="joindate">
         </div>
         <div class="form-group">
             <label for="salary">工资：</label>
@@ -57,9 +58,9 @@
             </select>
         </div>
         <div class="form-group" style="text-align: center">
-            <input class="btn btn-primary" type="submit" value="提交" />
-            <input class="btn btn-default" type="reset" value="重置" />
-            <input class="btn btn-default" type="button" value="返回" onclick="history.go(-1)" />
+            <input class="btn btn-primary" type="submit" value="提交"/>
+            <input class="btn btn-default" type="reset" value="重置"/>
+            <input class="btn btn-default" type="button" value="返回" onclick="history.go(-1)"/>
         </div>
     </form>
 </div>

@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author: guojy
@@ -39,24 +40,38 @@ public class EmpServlet extends HttpServlet {
         if ("findAll".equals(action)) {//查询全部
 //            this.findAll(request,response);
 //            this.findAllPage(request, response);//分页查询
-            this.findAllPageBean(request,response);//复杂分页查询
+            this.findAllPageBean(request, response);//复杂分页查询
         } else if ("edit".equals(action)) {//修改之前需要查询
             this.edit(request, response);
         } else if ("update".equals(action)) {//修改
             this.update(request, response);
         } else if ("save".equals(action)) {//保存
-            this.save(request,response);
+            this.save(request, response);
         } else if ("delete".equals(action)) {//删除
             this.delete(request, response);
+        } else if ("deleteMultiple".equals(action)) {
+            this.deleteMultiple(request, response);
         }
     }
+
+    /**
+     * 保存数据，取出页所有元素Map。封装到类中，调用方法传递对象进行保存
+     * 数据添加结束，重定向到查询
+     * @param request
+     * @param response
+     * @throws ServletException
+     * @throws IOException
+     */
     public void save(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
             EmpService empService = new EmpService();
             Map<String, String[]> parameterMap = request.getParameterMap();
+//            int pageNumber =Integer.parseInt(request.getParameter("pageNumber"));
+            String pageNumber = request.getParameter("pageNumber");
+            System.out.println("pageNumber = " + pageNumber);
             Emp emp = new Emp();
-            List<Emp> empList = empService.selectAll();
-            BeanUtils.populate(emp,parameterMap);
+            BeanUtils.populate(emp, parameterMap);
+
             empService.insert(emp);
             ///数据添加，重定向到查询页面，不要忘记 传递action参数
             response.sendRedirect(request.getContextPath() + "/EmpServlet?action=findAll&pageNumber=1");
@@ -66,6 +81,7 @@ public class EmpServlet extends HttpServlet {
             e.printStackTrace();
         }
     }
+
     public void findAll(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         EmpService empService = new EmpService();
         List<Emp> empList = empService.selectAll();
@@ -100,7 +116,7 @@ public class EmpServlet extends HttpServlet {
         int pageNumber = Integer.parseInt(pageNumberStr);
         //处理请求数据，每次不在是全部查询，而是分页查询
         EmpService empService = new EmpService();
-        List<Emp> empList=empService.selectPage(pageNumber,pageSize);
+        List<Emp> empList = empService.selectPage(pageNumber, pageSize);
         request.setAttribute("empList", empList);
         for (Emp emp : empList) {
             System.out.println(emp);
@@ -113,8 +129,8 @@ public class EmpServlet extends HttpServlet {
             IOException {
         // 复杂分页查询
         //获取数据
-        String pageNumberStr = request.getParameter("pageNumber");//（暂时在请求中手动写）
-        System.out.println(pageNumberStr);
+        String pageNumberStr = request.getParameter("pageNumber");//（   ）
+//        System.out.println(pageNumberStr);
         String pageSizeStr = request.getParameter("pageSize");//（暂时写死）
         int pageSize = 5;
         //页码,这个 由于get提交，这个地方的页码可以人为修改，
@@ -129,13 +145,14 @@ public class EmpServlet extends HttpServlet {
         //处理请求数据，每次不在是全部查询，而是分页查询
         EmpService empService = new EmpService();
         //将获取到的pageBean返回，里边已经包含了很多数据
-        PageBean<Emp> pageBeans=empService.selectPageBean(pageNumber,pageSize);
-        System.out.println(pageBeans);
+        PageBean<Emp> pageBeans = empService.selectPageBean(pageNumber, pageSize);
+//        System.out.println(pageBeans);
         request.setAttribute("pageBeans", pageBeans);
 
         //请求转发到
         request.getRequestDispatcher("list.jsp").forward(request, response);
     }
+
     public void edit(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         //修改之前，根据id，查询出一条数据,所以需要前台页面传递一个id
         String id = request.getParameter("id");
@@ -172,6 +189,18 @@ public class EmpServlet extends HttpServlet {
         String id = request.getParameter("id");
         EmpService empService = new EmpService();
         empService.delete(id);
+
+        //数据删完，重定向到查询页面，不要忘记 传递action参数
+        response.sendRedirect(request.getContextPath() + "/EmpServlet?action=findAll&pageNumber=1");
+    }
+
+    public void deleteMultiple(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        //获取前台传递的要删除的id  集合
+        String[] ids ;
+        ids = request.getParameterValues("ids");
+        System.out.println("ids = " + ids);
+        EmpService empService = new EmpService();
+        empService.deleteMultiple(ids);
 
         //数据删完，重定向到查询页面，不要忘记 传递action参数
         response.sendRedirect(request.getContextPath() + "/EmpServlet?action=findAll&pageNumber=1");
